@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const { exec } = require("child_process");
+const util = require("util");
+const execPromise = util.promisify(exec);
 
 //helper funciton to execute shell compands /handles the errors
 function executeCommand(command) {
@@ -20,22 +22,15 @@ function makeFolders(tmpDir, name) {
   //save all paths
   let paths = {};
 
-  //make the tmp folder if it doesnt exist
+  //make the video folder if it doesnt exist
   if (!fs.existsSync(tmpDir)) {
     fs.mkdirSync(tmpDir, { recursive: true });
   }
 
-  //make the video folder if it doesnt exist
-  const videoFolder = path.join(tmpDir, name);
-  paths["main"] = videoFolder;
-  if (!fs.existsSync(videoFolder)) {
-    fs.mkdirSync(videoFolder, { recursive: true });
-  }
-
   //add the inside folders
-  const folders = ["images", "audio", "video"];
+  const folders = ["images", "audio"];
   for (const folder of folders) {
-    const folderPath = path.join(videoFolder, folder);
+    const folderPath = path.join(tmpDir, folder);
     paths[folder] = folderPath;
     if (!fs.existsSync(folderPath)) {
       //make it if it doesnt exist
@@ -46,20 +41,37 @@ function makeFolders(tmpDir, name) {
   return paths;
 }
 
-//VIDEO PROCESS:
-async function processYTVideo(youtubeLink, name) {
-  //1. MAKE THE FOLDERS + GET THE PATHS
-  const tmpDir = path.join(__dirname, "tmp");
-  console.log("Setting up... ");
-  console.log("Making files inside, ", tmpDir);
+//get video duration
+async function getVideoLength(videoFilePath) {
+  try {
+    const { stdout } = await execPromise(
+      `ffprobe -v quiet -print_format json -show_format ${videoFilePath}`
+    );
 
-  const { images, audio, video } = makeFolders(tmpDir, name);
-  const videoFilePath = path.join(video, "video.mp4");
+    const videoInfo = JSON.parse(stdout);
+    const duration = videoInfo.format.duration;
+
+    return parseFloat(duration);
+  } catch (error) {
+    console.error("Error retrieving video duration:", error);
+  }
+}
+
+//VIDEO PROCESS:
+async function processVideo(videoFilePath, name) {
+  //1. MAKE THE FOLDERS + GET THE PATHS
+  const tmpDir = path.join(__dirname, "tmp", name);
+
+  const { images, audio } = makeFolders(tmpDir, name);
   const audioFilePath = path.join(audio, "audio.mp3");
 
+  const numSamples = 100;
+
   try {
-    console.log("1. Downloading video: ", name);
-    await executeCommand(`yt-dlp -f best -o "${videoFilePath}" ${youtubeLink}`);
+    console.log("1. Computing video sample rate: ", name);
+    const videoLength = await getVideoLength(videoFilePath);
+    const intervalLen = videoLength / numSamples;
+    const sampleRate = 1 / intervalLen;
 
     console.log("2. Extracting Audio... ");
     await executeCommand(
@@ -68,7 +80,7 @@ async function processYTVideo(youtubeLink, name) {
 
     console.log("3. Extracting Images... ");
     await executeCommand(
-      `ffmpeg -i "${videoFilePath}" -vf "fps=.05" "${images}/screenshot_%03d.png"`
+      `ffmpeg -i "${videoFilePath}" -vf "fps=${sampleRate}" "${images}/ss_%03d.png"`
     );
 
     const imageFilePaths = fs
@@ -85,8 +97,8 @@ async function processYTVideo(youtubeLink, name) {
   }
 }
 
-const youtubeLink = "https://www.youtube.com/watch?v=Q7kz-XO29t4";
-processYTVideo(youtubeLink, "andshewas")
+const videoPath = "./tmp/PrincessMononoke/video.mp4";
+processVideo(videoPath, "PrincessMononoke")
   .then((result) => {
     console.log("Media processed successfully:", result);
   })
