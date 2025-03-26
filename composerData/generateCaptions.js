@@ -1,4 +1,4 @@
-const fs = requre("fs");
+const fs = require("fs");
 const path = require("path");
 const { SpeechClient } = require("@google-cloud/speech");
 
@@ -28,4 +28,13 @@ async function getCaptions(audioFilePath) {
     .join("\n");
 
   console.log(`Transcription: ${transcription}`);
+  return transcription;
 }
+
+getCaptions("./tmp/PrincessMononoke/audios/5.mp3")
+  .then((result) => {
+    console.log("Media processed successfully:", result);
+  })
+  .catch((error) => {
+    console.error("Error:", error);
+  });

@@ -4,7 +4,7 @@ const height = window.innerHeight - 50;
 let textColor = "#C54400";
 let bgColor = "black";
 //font variables
-let caption = "INTERSTELLAR";
+let caption = "TEXT";
 let maxFontSize = 100;
 let sampleFac = 0.8;
 
@@ -14,9 +14,9 @@ let amplitude;
 let sound;
 
 //visual variables
-let max_pull = 2; //strength
+let max_pull = 1; //strength
 let stepsize = 5; //sample rate
-let num_bins = 5;
+let num_bins = 10;
 
 let presets = {
   kumon: {
@@ -50,11 +50,11 @@ function setup() {
   angleMode(RADIANS);
 
   //draw the first layer
-  // draw_underlay(caption,width/2,height/2, 'black')
-  image(img, 0, 0, width, height);
+  draw_underlay(caption, width / 2, height / 2, "black");
+  // image(img, 0, 0, width, height);
 
   //process screen
-  processScreen(5, "#C54400", 80);
+  processScreen(5, "black", 80);
 
   //create fft
   fft = new p5.FFT();

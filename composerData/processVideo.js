@@ -99,8 +99,9 @@ async function processVideo(videoFilePath, name) {
   }
 }
 
-const videoPath = "./tmp/andshewas/video.mp4";
-processVideo(videoPath, "andshewas")
+const name = "PrincessMononoke";
+const videoPath = `./tmp/${name}/video.mp4`;
+processVideo(videoPath, name)
   .then((result) => {
     console.log("Media processed successfully:", result);
   })

@@ -31,12 +31,16 @@ function draw() {
     for (let y = 0; y < height; y += stepSize) {
       push();
       translate(x, y);
-      rotate(90);
+      let zoom = 0.001;
+      let angle = noise(x * zoom, y * zoom) * 90;
+      rotate(angle);
+
+      
       rect(0, 0, 2, 15);
       pop();
     }
   }
 
-  textAlign(CENTER);
-  text("L  O  A  D  I  N  G ", width / 2, height / 2);
+  // textAlign(CENTER);
+  // text("L  O  A  D  I  N  G ", width / 2, height / 2);
 }
