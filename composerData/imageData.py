@@ -4,7 +4,6 @@ import colorsys
 
 from os import listdir
 from PIL import Image as PImage
-from sklearn.cluster import KMeans
 
 from utils.image_utils import *
 from utils.data_utils import GaussianClustering

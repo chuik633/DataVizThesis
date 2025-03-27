@@ -76,7 +76,7 @@ async function processVideo(videoFilePath, name) {
 
       //destination paths
       const videoSegmentPath = path.join(videos, `${sampleNum}.mp4`);
-      const audioSegmentPath = path.join(audios, `${sampleNum}.mp3`);
+      const audioSegmentPath = path.join(audios, `${sampleNum}.wav`);
       const imgSegmentPath = path.join(images, `${sampleNum}.png`);
 
       //split up the video
@@ -99,7 +99,7 @@ async function processVideo(videoFilePath, name) {
   }
 }
 
-const name = "PrincessMononoke";
+const name = "andshewas";
 const videoPath = `./tmp/${name}/video.mp4`;
 processVideo(videoPath, name)
   .then((result) => {
