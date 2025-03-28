@@ -30,12 +30,6 @@ def getAudioData(audioFilename):
     D = librosa.stft(signal)
     frequency_range = librosa.core.fft_frequencies(sr=sample_rate)
 
-    #  emotions
-    # pya.featureExtraction("audio_file.wav", 1.0, 1.0, "emotion_audio_features_folder")
-    # [result, features] = audioTrainTest.train_classifier('emotion_audio_features_folder')
-    # predicted_emotion = audioTrainTest.classify_audio_file('audio_file.wav', result)
-    # print("EMOTION", predicted_emotion)
-    
     # data entry
     entry = {
         "peak_amplitude":peak_amplitude,
@@ -47,19 +41,22 @@ def getAudioData(audioFilename):
     return entry
 
 
+
+
 #todo: change this later
 name = 'andshewas'
 audioDir = f'./tmp/{name}/audios/'
 audioFilenames = [audioDir+f for f in listdir(audioDir) if f.endswith('wav')]
 
-all_audio_Data = []
-for audioFilename in audioFilenames:
-    entry = getAudioData(audioFilename)
-    all_audio_Data.append(entry)
+# all_audio_Data = []
+# for audioFilename in audioFilenames:
+#     entry = getAudioData(audioFilename)
+#     all_audio_Data.append(entry)
 
-audio_df = pd.DataFrame(all_audio_Data)
-print(audio_df.head())
+# audio_df = pd.DataFrame(all_audio_Data)
+# print(audio_df.head())
 
 
-# testfile = audioFilenames[0]
-# features, _ = pya.audioFeatureExtraction.stFeatureExtraction(file_path, 1.0, 1.0) 
+testfile = audioFilenames[0]
+entry = getAudioData(testfile)
+print("ENTRY", entry)
