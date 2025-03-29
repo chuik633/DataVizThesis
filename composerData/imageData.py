@@ -74,18 +74,18 @@ def get_main_colors(imgPath,  color_similarity_threshold = 100):
 # print(len(c1))
 # print(c1)
 
+def getImageData(name):
+    moviePath = './tmp/'+name+"/"
+    imgDir = moviePath + 'images/'
+    img_files = [f for f in listdir(imgDir)]
+    file_colors = []
+    for img_file in img_files:
+        colors = get_main_colors(imgDir + img_file, 100)
+        file_colors.append({
+            'filename': img_file,
+            'colors': colors
+        })
 
-moviePath = './tmp/PrincessMononoke/'
-imgDir = moviePath + 'images/'
-img_files = [f for f in listdir(imgDir)]
-file_colors = []
-for img_file in img_files:
-    colors = get_main_colors(imgDir + img_file, 100)
-    file_colors.append({
-        'filename': img_file,
-        'colors': colors
-    })
-
-color_df = pd.DataFrame(file_colors)
-color_df.to_json("data.json", orient = 'records', indent = 3)
+    color_df = pd.DataFrame(file_colors)
+    color_df.to_json(moviePath+"imageSceneData.json", orient = 'records')
 

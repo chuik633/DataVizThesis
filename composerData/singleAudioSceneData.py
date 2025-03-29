@@ -24,7 +24,7 @@ class AudioScene():
 
         # convert stereo to mono
         if self.x.shape[1] == 2:
-            print("converting stereo to mono")
+            # print("converting stereo to mono")
             self.x = np.mean(self.x, axis = 1)
 
         # set up the window size and step size
@@ -32,12 +32,12 @@ class AudioScene():
         self.short_step_size = .02*self.Fs
         self.mid_window_size = 2.0 *self.Fs
         self.mid_step_size = 1.0*self.Fs
-        print('windowInfo:',  self.short_window_size, self.short_step_size, self.mid_window_size,   self.mid_step_size )
+        # print('windowInfo:',  self.short_window_size, self.short_step_size, self.mid_window_size,   self.mid_step_size )
 
-        print('computing shorterm features')
+        # print('computing shorterm features')
         self.short_features, self.short_feature_names = ShortTermFeatures.feature_extraction(self.x, self.Fs, self.short_window_size, self.short_step_size)
 
-        print('computing midterm features')
+        # print('computing midterm features')
         self.mid_features, _, self.mid_feature_names  = MidTermFeatures.mid_feature_extraction(
             self.x,
             self.Fs, 
@@ -49,21 +49,22 @@ class AudioScene():
 
     def getData(self):
         return {
-            'bpm':self.getBeat(),
+            # 'bpm':self.getBeat(),
             'notes_at_timestamps':self.getNotes(),
-            'loudness': None,
             'amplitude':self.getAmplitude(),
             'tempo':self.getTempo(),
+            'energy':self.getEnergy(),
+            'instruments':self.getInstruments(),
+            'emotion': self.getEmotionLabel()
         }
 
     def getBeat(self):
         bpm, ratio = MidTermFeatures.beat_extraction(self.short_features, 1)
         return bpm
     
-    def getNotes(self, threshold = .09):
-        chromagram, time_axis, _ = ShortTermFeatures.chromagram(self.x, self.Fs, self.short_window_size, self.short_step_size)
+    def getNotes(self, threshold = .05):
+        chromagram, time_axis, _ = ShortTermFeatures.chromagram(self.x, self.Fs, self.short_window_size, self.Fs)
         chromagram = chromagram.T
-        print("SHAPE", chromagram.shape)
         notes_at_timestamps = {}
         for i, time in enumerate(time_axis):
             # each column is that time index, so just look at this time index
@@ -77,17 +78,35 @@ class AudioScene():
     def getAmplitude(self):
         rms = librosa.feature.rms(y=self.x)[0] 
         peak_amplitude = np.max(np.abs(self.x))
-        return peak_amplitude
+        return float(peak_amplitude)
     
     def getEnergy(self):
         energy = librosa.feature.rms(y=self.x, hop_length=self.Fs)
-        return energy
+        avg = sum(energy[0])/len(energy[0])
+        return float(avg)
     
     def getTempo(self):
         tempo, beats = librosa.beat.beat_track(y=self.x, sr=self.Fs)
-        return tempo[0]
+        return float(tempo[0])
     
-# TESTINGGGG
-sceneAudio = AudioScene('./tmp/andshewas/audios/14.wav')
-print(sceneAudio.getTempo())
-print(sceneAudio.getBeat())
+    def getInstruments(self):
+        #TODO: DO THIS for ML class
+        return { #each value is the loudness of each
+            'strings':.5,
+            'woodwinds':.5,
+            'piano':.1
+        }
+    
+    def getEmotionLabel(self):
+         #TODO: DO THIS for ML class
+        return {
+            'happy':.5,
+            'sad':.25,
+            'fear':.25,
+            "funny":0
+        }
+    
+# # TESTINGGGG
+# sceneAudio = AudioScene('./tmp/andshewas/audios/14.wav')
+# print(sceneAudio.getData())
+# # print(sceneAudio.getBeat())

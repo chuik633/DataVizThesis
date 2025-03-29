@@ -64,11 +64,11 @@ def bin_captions(events, bin_size = 10):
 
     return bins
 
-def make_captions_data(name, bin_size):
+def getCaptionData(name, bin_size = 100):
     events =parse_captions(f"./tmp/{name}/captions.ass")
     bins = bin_captions(events,bin_size = bin_size)
     print(bins[0])
     with open(f"./tmp/{name}/captions.json", 'w', encoding='utf-8') as json_file:
         json.dump(bins, json_file, indent=4)
 
-make_captions_data("PrincessMononoke", 100)
+# getCaptionData("PrincessMononoke", 100)

@@ -58,17 +58,36 @@ async function getVideoLength(videoFilePath) {
 }
 
 //VIDEO PROCESS:
-async function processVideo(videoFilePath, name) {
+async function processVideo(videoFilePath, name, numSamples) {
   //1. MAKE THE FOLDERS + GET THE PATHS
   const tmpDir = path.join(__dirname, "tmp", name);
 
   const { images, audios, videos } = makeFolders(tmpDir, name);
-  const numSamples = 20;
 
   try {
     console.log("0. Computing video sample rate: ", name);
     const videoLength = await getVideoLength(videoFilePath);
     const intervalLen = videoLength / numSamples;
+
+    //write the variables to a file
+    const videoInfo = {
+      length: videoLength,
+      sampleLength: intervalLen,
+      samples: numSamples,
+    };
+
+    fs.writeFile(
+      path.join(tmpDir, "videoInfo.json"),
+      JSON.stringify(videoInfo, null, 2), // null, 2 adds indentation for pretty-printing
+      (err) => {
+        if (err) {
+          console.error("err:", err);
+        } else {
+          console.log("videoInfo.json written");
+        }
+      }
+    );
+    console.log("wrote the settings");
 
     for (let sampleNum = 0; sampleNum < numSamples; sampleNum++) {
       const startTime = sampleNum * intervalLen;
@@ -99,9 +118,19 @@ async function processVideo(videoFilePath, name) {
   }
 }
 
-const name = "andshewas";
+const name = process.argv[2];
+const numSamples = process.argv[3];
+if (!name) {
+  console.error("Error: un please give a name thanks");
+  process.exit(1);
+}
+if (!numSamples) {
+  console.error("NEED SMPLE NUM");
+  process.exit(1);
+}
+
 const videoPath = `./tmp/${name}/video.mp4`;
-processVideo(videoPath, name)
+processVideo(videoPath, name, numSamples)
   .then((result) => {
     console.log("Media processed successfully:", result);
   })
