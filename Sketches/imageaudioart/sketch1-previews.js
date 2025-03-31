@@ -70,11 +70,7 @@ let previews = function (p) {
     }
   }
 
-  // function p.draw() {
-  //   p.background(bgColor);
-  // }
 
-  function pixelRect(img, x, y, width, height) {}
 };
 
 new p5(previews);

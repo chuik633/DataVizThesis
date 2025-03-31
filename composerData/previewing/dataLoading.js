@@ -6,7 +6,8 @@ const width = window.innerWidth;
 const height = window.innerHeight;
 
 async function loadData() {
-  const imageSceneData = await d3.json(mainDir + "imageSceneData.json");
+  let imageSceneData = await d3.json(mainDir + "imageSceneData.json");
+
   //   const audioSceneData = await d3.json(mainDir + "audioSceneData.json");
 
   console.log(imageSceneData);
@@ -22,13 +23,12 @@ async function loadData() {
 
 function makeLayout(container, imageSceneData) {
   const timeScale = d3.scaleLinear().domain();
-
   const svg = container
     .append("svg")
     .attr("width", width)
     .attr("height", height);
 
-  const radius = (width / imageSceneData.length) * 4;
+  const radius = (width / imageSceneData.length) * 2;
 
   const nodes = imageSceneData.map((d, i) => ({
     id: i,
@@ -38,26 +38,6 @@ function makeLayout(container, imageSceneData) {
     ...d,
   }));
   console.log(nodes);
-
-  const sim = d3
-    .forceSimulation(nodes)
-    .force("charge", d3.forceManyBody().strength(-0.4))
-    .force(
-      "collision",
-      d3.forceCollide().radius((d) => d.radius + 5)
-    )
-    .force("center", d3.forceCenter(width / 2, height / 2))
-    .on("tick", () => ticked());
-
-  function ticked() {
-    node
-      .attr("x", (d) => Math.max(d.radius, Math.min(width - d.radius, d.x)))
-      .attr("y", (d) => Math.max(d.radius, Math.min(height - d.radius, d.y)));
-
-    color_node
-      .attr("x", (d) => Math.max(d.radius, Math.min(width - d.radius, d.x)))
-      .attr("y", (d) => Math.max(d.radius, Math.min(height - d.radius, d.y)));
-  }
 
   const node = svg
     .selectAll("image")
@@ -83,6 +63,46 @@ function makeLayout(container, imageSceneData) {
       let [r, g, b] = d.colors[0];
       return `rgb(${r},${g},${b})`;
     });
+  //   makeSim(nodes, node, color_node);
+
+  let activeNodes = [];
+  svg.on("mousemove", (event) => {
+    let [mouseX, mouseY] = d3.pointer(event);
+    activeNodes = nodes.filter((d) => {
+      const dx = d.x - mouseX;
+      const dy = d.y - mouseY;
+      return Math.sqrt(dx ** 2 + dy ** 2) < 50;
+    });
+    if (activeNodes.length > 0) {
+      sim = makeSim(activeNodes, node, color_node);
+    }
+  });
+  svg.on("mouseout", () => {
+    activeNodes = [];
+  });
+}
+
+function makeSim(nodes, node, color_node) {
+  let sim = d3
+    .forceSimulation(nodes)
+    .force("charge", d3.forceManyBody().strength(-0.4))
+    .force(
+      "collision",
+      d3.forceCollide().radius((d) => d.radius + 5)
+    )
+    .force("center", d3.forceCenter(width / 2, height / 2))
+    .on("tick", () => ticked());
+
+  function ticked() {
+    node
+      .attr("x", (d) => Math.max(d.radius, Math.min(width - d.radius, d.x)))
+      .attr("y", (d) => Math.max(d.radius, Math.min(height - d.radius, d.y)));
+
+    color_node
+      .attr("x", (d) => Math.max(d.radius, Math.min(width - d.radius, d.x)))
+      .attr("y", (d) => Math.max(d.radius, Math.min(height - d.radius, d.y)));
+  }
+  return sim;
 }
 
 loadData();

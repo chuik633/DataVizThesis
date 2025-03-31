@@ -79,11 +79,12 @@ def getImageData(name):
     imgDir = moviePath + 'images/'
     img_files = [f for f in listdir(imgDir)]
     file_colors = []
-    for img_file in img_files:
+    for i,img_file in enumerate(img_files):
         colors = get_main_colors(imgDir + img_file, 100)
         file_colors.append({
             'filename': img_file,
-            'colors': colors
+            'colors': colors,
+            'sceneNum':i
         })
 
     color_df = pd.DataFrame(file_colors)

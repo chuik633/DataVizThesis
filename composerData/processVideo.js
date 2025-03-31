@@ -110,7 +110,7 @@ async function processVideo(videoFilePath, name, numSamples) {
 
       //extract the image
       await executeCommand(
-        `ffmpeg -i "${videoSegmentPath}" -ss 00:00:01 -vframes 1 ${imgSegmentPath}`
+        `ffmpeg -i "${videoSegmentPath}" -ss 00:00:00 -vframes 1 ${imgSegmentPath}`
       );
     }
   } catch (error) {

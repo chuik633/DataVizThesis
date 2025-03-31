@@ -3,7 +3,6 @@ import subprocess
 import json
 import os
 
-
 from audioData import getAudioData
 from imageData import getImageData
 from captionsData import getCaptionData
@@ -24,16 +23,19 @@ def getData(name, numSamples = 20, youtubeLink = False, captions = False):
     #1. if its a youtube link, it downloads it to a video
     if youtubeLink != False:
         try:
-            command = ['yt-dlp', '-o', mainDir+"video.mp4", youtubeLink]
+            command = ['yt-dlp', '-f', 'mp4', '-o', mainDir + "video.mp4", youtubeLink]
             result = subprocess.run(command, capture_output=True, text=True, check=True)
+            print(result)
         except subprocess.CalledProcessError as e:
             print("Error downloading video:", e.stderr)
             return
 
     #2. splits the video in n_samples videos, and corresponding audio files and images
+    
     command = ['node', 'processVideo.js', str(name), str(numSamples)]
+    print(command)
     try:
-        result = subprocess.run(command,capture_output=True, text=True, check=True)
+        result = subprocess.run(command, capture_output=True, text=True, check=True)
         print("Split video successfully")
     except subprocess.CalledProcessError as e:
         print("Error processing video:", e.stderr)
@@ -59,8 +61,5 @@ def getData(name, numSamples = 20, youtubeLink = False, captions = False):
     if captions:
         getCaptionData(name, int(videoInfo['sampleLength']))
 
-
-    
-
-getData('Everything', numSamples = 80, youtubeLink ='https://www.youtube.com/watch?v=T51QSG9VN8w')
+getData('Challengers', numSamples = 19)
 # getData('PrincessMononoke', numSamples = 100)
