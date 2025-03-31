@@ -2,5 +2,5 @@ body {
   display: flex;
   flex-direction: row;
   gap: 30px;
-  background-color: rgb(238, 237, 226);
+  background-color: black;
 }

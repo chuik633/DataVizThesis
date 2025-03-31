@@ -20,4 +20,4 @@ def getAudioData(name):
     audio_df.to_json(f'./tmp/{name}/audioSceneData.json', orient = 'records')
 
 
-getAudioData("PrincessMononoke")
+# getAudioData("PrincessMononoke")

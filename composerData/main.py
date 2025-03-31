@@ -21,7 +21,6 @@ def getData(name, numSamples = 20, youtubeLink = False, captions = False):
     mainDir = f"./tmp/{name}/"
     os.makedirs(mainDir, exist_ok=True)
 
-
     #1. if its a youtube link, it downloads it to a video
     if youtubeLink != False:
         try:
@@ -63,4 +62,5 @@ def getData(name, numSamples = 20, youtubeLink = False, captions = False):
 
     
 
-getData('pingu', numSamples = 10, youtubeLink ='https://www.youtube.com/watch?v=Sct5j7Quo54')
+getData('Everything', numSamples = 80, youtubeLink ='https://www.youtube.com/watch?v=T51QSG9VN8w')
+# getData('PrincessMononoke', numSamples = 100)
